@@ -21,4 +21,4 @@ RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-di
 
 
 CMD php-fpm
-EXPOSE 9000
+EXPOSE 9003
