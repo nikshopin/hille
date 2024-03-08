@@ -76,7 +76,7 @@ class ArrNumbersValidator
 }
 
 
-$sumNumbers = new SumNumber([40, 50, 77.9, 55]);
-$divNumber = new DividingNumber([60, 20, 6]);
-$SubtractingNumber = new SubtractingNumber([100, 10]);
-$MultiplyingNumbers = new MultiplyingNumber([10, 0]);
+//$sumNumbers = new SumNumber([40, 50, 77.9, 55]);
+//$divNumber = new DividingNumber([60, 20, 6]);
+//$SubtractingNumber = new SubtractingNumber([100, 10]);
+//$MultiplyingNumbers = new MultiplyingNumber([10, 0]);
