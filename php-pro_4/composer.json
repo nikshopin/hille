@@ -1,0 +1,15 @@
+{
+    "name": "root/app",
+    "type": "project",
+    "require-dev": {
+        "jenssegers/date": "^4.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {}
+}
