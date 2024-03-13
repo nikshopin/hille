@@ -11,5 +11,8 @@
         }
     },
     "minimum-stability": "stable",
-    "require": {}
+    "require": {
+      "ext-curl": "*",
+        "guzzlehttp/guzzle": "^7.8"
+    }
 }

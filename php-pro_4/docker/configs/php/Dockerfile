@@ -10,6 +10,7 @@ RUN docker-php-ext-install pdo pdo_mysql
 RUN pecl install xdebug && docker-php-ext-enable xdebug;
 COPY ./docker/configs/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
+
 # Add a simple script that emulates the sendmail command and writes to a unique file each time
 RUN echo '#!/bin/sh\nFILE=/var/www/mail/$(date +"%Y%m%d%H%M%S").txt\ncat > $FILE' > /usr/sbin/sendmail && \
     chmod +x /usr/sbin/sendmail

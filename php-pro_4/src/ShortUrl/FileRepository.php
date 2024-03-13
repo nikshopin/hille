@@ -2,52 +2,98 @@
 
 namespace App\ShortUrl;
 
+use App\ShortUrl\Exceptions\DataNotFoundException;
 use App\ShortUrl\Interfaces\IUrlRepository;
+use \Exception;
 
 class FileRepository implements IUrlRepository
 {
-    public function createFile(): void{
-        $file = getcwd() . "/fileRepository";
-        if (!(is_dir("$file"))){
-            $file = mkdir("$file");
-        }
-        $file = $file ."/ShortUrlRepo.Json";
-        file_put_contents($file, '', FILE_APPEND);
+    protected static string $file;
+
+    public function __construct(){
+        self::$file = getcwd() . "/fileRepository/ShortUrlRepo.Json";
     }
 
+    public function createFile(): void{
+        $directory = getcwd() . "/fileRepository";
+        if (!(is_dir("$directory"))){
+            mkdir("$directory");
+        }
+        file_put_contents(self::$file, '', FILE_APPEND);
+    }
 
-    public function writeTo($url, string $code)
+    /**
+     * @throws Exception
+     */
+    public function writeIn(string $url, string $code): bool
     {
-        $file = getcwd() . "/fileRepository/ShortUrlRepo.Json";
-        if (!(file_exists($file))){
+        if (!(file_exists(self::$file))){
             $this->createFile();
         }
         $data = json_encode(array($url => $code));
-        file_put_contents($file, $data, FILE_APPEND);
-    }
-
-    public function issetInRepo(string $data, string $keyOrValue): bool
-    {
-        $array = json_decode(file_get_contents($this->file), 'true');
-        if($keyOrValue === 'key'){
-            return array_key_exists($array["$data"]);
-        }else{
-            $array =array_flip($array);
-            return array_key_exists($array["$data"]);
-
+        try{
+            file_put_contents(self::$file, $data, FILE_APPEND);
+            return true;
+        }catch(Exception){
+            throw new Exception('Не получилось сохранит в файл данный');
         }
     }
 
-    public function getCodeByUrl(string $url): string
-    {
-       $array = json_decode(file_get_contents($this->file), 'true');
-        return array_key_exists($array["$url"]);
+    public function fileRepositoryIsEmpty(): bool{
+
+        return (false != json_decode(file_get_contents(self::$file)))??  false;
     }
 
+    public function issetInRepo(string $data): bool
+    {
+        if (!($this->fileRepositoryIsEmpty())){
+            return false;
+        }
+        $arr = file_get_contents(self::$file);
+        $res =array_key_exists($data, $arr);
+        if ($res == false){
+            $arr =array_flip($arr);
+            return array_key_exists($data, $arr);
+        }
+        return $res;
+    }
+
+    /**
+     * @param string $url
+     * @return string
+     * @throws DataNotFoundException
+     */
+    public function getCodeByUrl(string $url): string
+    {
+       try{
+           $arr = (array)json_decode( file_get_contents(self::$file), true);
+           if ($arr != false){
+                return $arr["$url"];
+           }else{
+                throw new DataNotFoundException('В файле не найдено связки URL=>CODE' );
+           }
+       }catch (\Exception  $e){
+           throw new DataNotFoundException($e->getMessage());
+       }
+    }
+
+    /**
+     * @param string $code
+     * @throws DataNotFoundException
+     * @return string
+     */
     public function getUrlByCode(string $code): string
     {
-        $array = json_decode(file_get_contents($this->file), 'true');
-        $array =array_flip($array);
-        return array_key_exists($array["$code"]);
+        $arr = json_decode(file_get_contents(self::$file),true);
+        $arr = array_flip($arr);
+        try{
+            if (array_key_exists("$code", $arr)){
+                return $arr[$code];
+            }else{
+            throw new DataNotFoundException('В файле не найдено связки CODE=>URL');
+            }
+        }catch(DataNotFoundException){
+            return false;
+        }
     }
 }

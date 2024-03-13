@@ -8,7 +8,7 @@ class MySQLRepository implements IUrlRepository
 {
 
     public
-    function writeTo($Url, string $code)
+    function writeIn($Url, string $code)
     {
         // TODO: Implement writeTo() method.
     }

@@ -10,12 +10,10 @@ class ValidatorUrl implements IValidatorUrl
         try{
             if ( false !== (filter_var($url, FILTER_VALIDATE_URL))){
                 $this->existingUrl($url);
-                return true;
             }
-        }
-        catch (\InvalidArgumentException ){
             throw new InvalidArgumentException($url . ' не валидный URL');
-         }
+        }catch (\InvalidArgumentException ){}
+        return true;
     }
 
     /**
@@ -26,13 +24,15 @@ class ValidatorUrl implements IValidatorUrl
     public function existingUrl(string $url):bool
     {
         $ch = curl_init("$url");
-        $http_code = curl_getinfo("$ch", CURLINFO_HTTP_CODE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         try{
-            if ($http_code >= 200 && $http_code <400){
-                return true;
+            if ($http_code >= 200 && $http_code < 400){
+                curl_close($ch);
             }
-        }catch (InvalidArgumentException){
             throw new InvalidArgumentException($url . ' не существует');
-        }
+        }catch (InvalidArgumentException){}
+        return true;
     }
 }
